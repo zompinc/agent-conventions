@@ -80,6 +80,8 @@ Keep PR descriptions, PR and review comments, and issue bodies as short as possi
 
 Why: every sentence is something the reader has to process, and padded text reads as machine-generated. Draft, then cut until removing anything more would lose a fact the reader needs. A code snippet plus two sentences usually beats prose; use a table only when it replaces more text than it adds.
 
+When a PR fully resolves an issue, link it with a closing keyword (`Fixes #123`) so the issue closes on merge; use whichever keyword the repo's merged PRs already use. For partial work write `Part of #123`, without a keyword. Words like "Addresses" or "Relates to" create no link, so the issue stays open after merge and has to be closed by hand. Keywords only take effect when the PR targets the default branch.
+
 ## Paths and references
 
 Never use absolute filesystem paths (`C:\...`, `Q:\...`, `/home/...`, `/c/Users/...`) in any artifact a collaborator, client, or future contributor might read - READMEs, slide decks, code comments, commit messages, AGENTS files, anything. They reveal the author's personal machine layout, don't work for anyone else, and look amateurish in client-facing material.
