@@ -4,7 +4,7 @@ Cross-project conventions for Zomp engineers - git workflow, documentation style
 
 These are one company's opinions, published because they may be useful to others setting up the same thing. Fork and adapt; nothing here needs to be agreed with.
 
-Conventions that apply to only one stack, or only to one kind of task, live in [`skills/`](./skills) instead. `home/AGENTS.md` is loaded into every session regardless of language, so putting .NET rules there charged a Rust session roughly 2,000 tokens for advice it could not use - and, worse, stated rules like "never WPF" as if they were unconditional. A skill loads on demand: only its name and one-line description sit in context until something makes it relevant.
+Conventions that apply to only one stack, or only to one kind of task, live in [`home/.claude/skills/`](home/.claude/skills) instead. `home/AGENTS.md` is loaded into every session regardless of language, so putting .NET rules there charged a Rust session roughly 2,000 tokens for advice it could not use - and, worse, stated rules like "never WPF" as if they were unconditional. A skill loads on demand: only its name and one-line description sit in context until something makes it relevant.
 
 ## Setup (one command)
 
@@ -39,10 +39,22 @@ cd ~/agent-conventions && git pull
 
 If you symlinked, the change is live immediately. If you copied (no Dev Mode on Windows), re-run the bootstrap to refresh the copy.
 
+### Automatic updates
+
+The bootstrap sets up `scripts/update-conventions.sh` (`.ps1` on Windows) to run on its own, from two triggers:
+
+- **Claude session start**, through a `SessionStart` hook, so the machine you are actually working on is current when it matters.
+- **A daily job** - cron on macOS and Linux, a scheduled task on Windows - for machines where no Claude session starts for a while. Set `ZOMP_NO_SCHEDULE=1` before bootstrapping to skip it.
+
+The updater is deliberately timid. It fast-forwards only, and gives up quietly if the working tree is dirty, the branch is ahead of its remote, the branch is not `master`, it already ran in the last six hours (`ZOMP_UPDATE_MAX_AGE_HOURS`), or the network is down. It never merges, never rebases, and never touches local work. After a successful pull it re-runs the bootstrap, so a newly added skill gets linked with nobody doing anything.
+
+Force a check with `scripts/update-conventions.sh --now`. What it did is in `.git/zomp-update.log`, which sits outside the work tree and so can never be committed.
+
 ## What's in scope
 
+- `home/` - mirrors your home directory; every file under it is symlinked to the matching path in `$HOME`, so new files need no change to the bootstrap scripts
 - `home/AGENTS.md` - always-resident conventions (git, docs and prose style, versioning principle, branding), symlinked to `~/AGENTS.md`
-- `skills/<name>/SKILL.md` - stack- or activity-specific conventions, loaded on demand
+- `home/.claude/skills/<name>/SKILL.md` - stack- or activity-specific conventions, loaded on demand
   - `zomp-dotnet` - .NET/C# stack defaults, architecture, packaging, build quality
   - `zomp-new-repo` - first-commit files, pnpm, the husky pre-commit hook (templates included), shared `.vscode` files
   - `zomp-ci` - GitHub Actions runners, local `act` runs, artifact retention, build version stamping

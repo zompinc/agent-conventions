@@ -1,13 +1,16 @@
 # Bootstrap Zomp agent-conventions on Windows.
 #
-# Symlinks $HOME\AGENTS.md to this repo's home\AGENTS.md so all AI coding agents
-# (Claude Code, Codex, Cursor, Aider) pick it up via directory walk-up, and
-# symlinks each skill under skills\ into $HOME\.claude\skills\ so stack- and
-# activity-specific conventions load on demand instead of costing context in
-# every session.
+# Everything under home\ mirrors your home directory: home\AGENTS.md becomes
+# $HOME\AGENTS.md, home\.claude\skills\<name>\ becomes $HOME\.claude\skills\<name>\,
+# and anything added there later lands in the matching place with no change to
+# this script.
 #
-# Also enables this repo's own git hooks, which keep client names and machine
-# paths out of a public repository.
+# Files are linked individually rather than whole directories, so linking
+# .claude\skills never replaces a directory holding skills from other sources.
+# New files appear on the next bootstrap run, which the updater does after
+# every pull.
+#
+# Also enables this repo's git hooks and registers a daily update task.
 #
 # Everything of value stays in the repo; this machine holds only links.
 # Falls back to copying if symlink creation fails (e.g. Developer Mode off
@@ -18,64 +21,96 @@
 $ErrorActionPreference = 'Stop'
 
 $RepoRoot = $PSScriptRoot
-$Source = Join-Path $RepoRoot 'home\AGENTS.md'
-$Target = Join-Path $HOME 'AGENTS.md'
+$HomeSource = Join-Path $RepoRoot 'home'
 
-if (-not (Test-Path $Source)) {
-    Write-Error "Source not found: $Source"
+if (-not (Test-Path $HomeSource)) {
+    Write-Error "Source not found: $HomeSource"
     exit 1
 }
 
-function Set-Link {
-    param([string]$LinkPath, [string]$TargetPath, [bool]$IsDirectory)
-
-    if (Test-Path $LinkPath) {
-        $existing = Get-Item $LinkPath -Force
-        if ($existing.LinkType -eq 'SymbolicLink' -and $existing.Target -eq $TargetPath) {
-            Write-Host "Already linked: $LinkPath -> $TargetPath"
-            return
+# Drop links that point into this repo but no longer resolve - a file renamed
+# or moved upstream leaves one behind. This runs before linking, because a
+# dangling directory link would break creating files beneath it.
+function Remove-StaleLinks([string]$Root, [switch]$TopLevelOnly) {
+    if (-not (Test-Path $Root)) { return }
+    $items = if ($TopLevelOnly) {
+        Get-ChildItem $Root -Force -ErrorAction SilentlyContinue
+    } else {
+        Get-ChildItem $Root -Recurse -Force -ErrorAction SilentlyContinue
+    }
+    foreach ($item in $items) {
+        if ($item.LinkType -ne 'SymbolicLink') { continue }
+        if ($item.Target -notlike "$RepoRoot*") { continue }
+        if (-not (Test-Path $item.Target)) {
+            Remove-Item $item.FullName -Force
+            Write-Host "Removed stale link: $($item.FullName)"
         }
-        Write-Host "Removing existing $LinkPath"
-        Remove-Item $LinkPath -Force -Recurse
+    }
+}
+
+Remove-StaleLinks (Join-Path $HOME '.claude\skills')
+Remove-StaleLinks $HOME -TopLevelOnly
+
+$linked = 0
+$kept = 0
+
+foreach ($file in Get-ChildItem $HomeSource -Recurse -File -Force) {
+    $rel = $file.FullName.Substring($HomeSource.Length).TrimStart('\', '/')
+    $dest = Join-Path $HOME $rel
+
+    if (Test-Path $dest) {
+        $existing = Get-Item $dest -Force
+        if ($existing.LinkType -eq 'SymbolicLink' -and $existing.Target -eq $file.FullName) {
+            $kept++
+            continue
+        }
+        Remove-Item $dest -Force -Recurse
     }
 
-    # Try symlink first. Requires Developer Mode or admin.
+    $parent = Split-Path -Parent $dest
+    if (-not (Test-Path $parent)) { New-Item -ItemType Directory -Path $parent -Force | Out-Null }
+
     try {
-        New-Item -ItemType SymbolicLink -Path $LinkPath -Target $TargetPath | Out-Null
-        Write-Host "Linked: $LinkPath -> $TargetPath"
+        New-Item -ItemType SymbolicLink -Path $dest -Target $file.FullName | Out-Null
+        Write-Host "Linked: $dest"
     } catch {
         Write-Warning "Symlink failed ($($_.Exception.Message))."
         Write-Warning "Falling back to copy. Re-run this script after 'git pull' to refresh."
         Write-Warning "To enable symlinks: Settings -> Privacy & Security -> For developers -> Developer Mode."
-        if ($IsDirectory) {
-            Copy-Item $TargetPath $LinkPath -Recurse -Force
-        } else {
-            Copy-Item $TargetPath $LinkPath -Force
-        }
-        Write-Host "Copied: $LinkPath"
+        Copy-Item $file.FullName $dest -Force
+        Write-Host "Copied: $dest"
     }
+    $linked++
 }
 
-Set-Link -LinkPath $Target -TargetPath $Source -IsDirectory $false
-
-# Link each skill directory individually rather than the skills\ folder itself,
-# so skills from other sources in $HOME\.claude\skills are left alone.
-$SkillsSource = Join-Path $RepoRoot 'skills'
-$SkillsTarget = Join-Path $HOME '.claude\skills'
-
-if (Test-Path $SkillsSource) {
-    if (-not (Test-Path $SkillsTarget)) {
-        New-Item -ItemType Directory -Path $SkillsTarget -Force | Out-Null
-    }
-    foreach ($skill in Get-ChildItem $SkillsSource -Directory) {
-        Set-Link -LinkPath (Join-Path $SkillsTarget $skill.Name) -TargetPath $skill.FullName -IsDirectory $true
-    }
-}
+Write-Host "Links: $linked new, $kept already correct."
 
 # Hooks live in the repo so a clone gets them; git needs telling where.
 if (Test-Path (Join-Path $RepoRoot '.githooks')) {
     git -C $RepoRoot config core.hooksPath .githooks
     Write-Host "Hooks enabled: core.hooksPath=.githooks"
+}
+
+# Daily update, for machines where a Claude session may not start for a while.
+# Set ZOMP_NO_SCHEDULE=1 to opt out.
+if ($env:ZOMP_NO_SCHEDULE -ne '1') {
+    $taskName = 'Zomp agent-conventions update'
+    $existing = Get-ScheduledTask -TaskName $taskName -ErrorAction SilentlyContinue
+    if ($existing) {
+        Write-Host "Update task already registered."
+    } else {
+        $script = Join-Path $RepoRoot 'scripts\update-conventions.ps1'
+        $action = New-ScheduledTaskAction -Execute 'powershell.exe' `
+            -Argument "-NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -File `"$script`""
+        $trigger = New-ScheduledTaskTrigger -Daily -At 9am
+        try {
+            Register-ScheduledTask -TaskName $taskName -Action $action -Trigger $trigger `
+                -Description 'Fast-forward the Zomp agent conventions and refresh the home-directory links.' | Out-Null
+            Write-Host "Scheduled: daily update at 09:00."
+        } catch {
+            Write-Warning "Could not register the update task: $($_.Exception.Message)"
+        }
+    }
 }
 
 Write-Host "Conventions update with: cd $RepoRoot; git pull"

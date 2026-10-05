@@ -27,13 +27,27 @@ Deliberate counter-examples - the rules that quote a bad path on purpose - go in
 
 ## Layout
 
-- `home/AGENTS.md` - symlinked to `~/AGENTS.md`. Loaded in every session of
-  every project, so every byte is charged to work that may not need it.
-- `skills/<name>/SKILL.md` - symlinked into `~/.claude/skills/`. Loaded on
-  demand, so only the name and description cost context until something makes
-  the skill relevant.
+`home/` mirrors the home directory. Every file under it is symlinked to the
+matching path in `$HOME`, so adding a file there needs no change to the
+bootstrap scripts.
+
+- `home/AGENTS.md` -> `~/AGENTS.md`. Loaded in every session of every project,
+  so every byte is charged to work that may not need it.
+- `home/.claude/skills/<name>/SKILL.md` -> `~/.claude/skills/<name>/SKILL.md`.
+  Loaded on demand, so only the name and description cost context until
+  something makes the skill relevant.
 - `.githooks/` - enabled by the bootstrap scripts through `core.hooksPath`.
 - `scripts/check-private-content.sh` - the scanner, shared by the hook and CI.
+- `scripts/update-conventions.sh` / `.ps1` - fast-forward and relink. Run from
+  a Claude `SessionStart` hook and a daily scheduled job.
+
+Files are linked one by one rather than whole directories, so linking into
+`~/.claude/skills` never replaces a directory that holds skills from other
+sources. A file added upstream appears after the next bootstrap run, which the
+updater performs after every pull.
+
+Skill directories are prefixed `zomp-` because `~/.claude/skills` is a single
+flat namespace shared with every other source on the machine.
 
 ## Which file a rule goes in
 
