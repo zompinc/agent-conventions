@@ -1,0 +1,10 @@
+# Lines the private-content check should ignore, as extended regexes.
+# These are the rules that quote a bad path or address as the example of what
+# not to do. Keep this list short - every entry is a hole in the check.
+
+Never use absolute filesystem paths
+Cross-repo relative paths
+Tilde-relative paths
+Heuristic: if a path contains a drive letter
+Never publish a Claude Code session URL
+trailers with an AI-account email

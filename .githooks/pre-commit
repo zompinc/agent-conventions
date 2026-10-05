@@ -1,0 +1,7 @@
+#!/bin/sh
+# This repository is public. Keep client names, machine paths and session
+# links out of it. Enabled by the bootstrap script via core.hooksPath.
+
+set -e
+
+sh "$(dirname "$0")/../scripts/check-private-content.sh"

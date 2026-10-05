@@ -1,0 +1,18 @@
+#!/bin/sh
+# Reject the trailers AGENTS.md forbids: an AI co-author address, which lands
+# the AI in the repo's Contributors sidebar, and a session link, which is a
+# private transcript. "Generated with Claude Code" is fine and passes.
+
+set -e
+
+msg="$1"
+
+if grep -qiE 'co-authored-by:.*(anthropic|claude)' "$msg"; then
+  echo "commit-msg: drop the AI Co-Authored-By trailer (AGENTS.md, Agent session links)." >&2
+  exit 1
+fi
+
+if grep -qiE 'claude\.ai/code/session|^[[:space:]]*Claude-Session:' "$msg"; then
+  echo "commit-msg: drop the session link (AGENTS.md, Agent session links)." >&2
+  exit 1
+fi

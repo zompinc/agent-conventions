@@ -1,0 +1,24 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+# Declared null so the GitHub Actions schema linter accepts `!env.ACT` guards.
+env:
+  ACT:
+
+jobs:
+  check:
+    # Public repo, so a GitHub-hosted runner only: a fork PR must never execute
+    # on a self-hosted machine. See the zomp-ci skill.
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Backstop for the pre-commit hook, which a local --no-verify skips.
+      - name: Check for private content
+        run: sh scripts/check-private-content.sh --all
