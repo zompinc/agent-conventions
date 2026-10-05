@@ -1,4 +1,4 @@
-# Zomp Dev Conventions
+# Zomp Agent Conventions
 
 Cross-project conventions for Zomp engineers - git workflow, documentation style, CI, versioning, branding. The shipped file is [`home/AGENTS.md`](home/AGENTS.md). It's named `AGENTS.md` because that's the cross-tool convention all major AI coding agents (Claude Code, Codex, Cursor, Aider) walk up the directory tree to find.
 
