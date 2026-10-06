@@ -103,7 +103,7 @@ Never publish a Claude Code session URL (`https://claude.ai/code/session_...`) a
 
 Why: the link is a private transcript of the working session. It can carry absolute paths, credentials seen in passing, unrelated client work, and half-formed reasoning that was never meant for an audience. It is useless to anyone without access, and its presence in a public repo invites people to ask what is behind it.
 
-A plain "Generated with Claude Code" attribution line at the end of the commit message is fine - it discloses the tool without exposing the transcript.
+Do not add "Generated with Claude Code" or any other tool-attribution line to commit messages, PR bodies, issues or comments, even when a harness default appends one. It tells the reader nothing they act on, and on projects with an AI contribution policy it reads as the metadata those policies ask contributors to strip. If a project's contribution policy requires disclosure, disclose in the form that policy prescribes, and only there.
 
 Never add `Co-Authored-By:` trailers with an AI-account email (e.g. `noreply@anthropic.com`), even when a harness default suggests one. GitHub maps the email to the AI's account and lists it in the repo's Contributors sidebar; contributor lists should stay limited to the humans, even when they work with agents. There is no GitHub setting to delist a contributor after the fact - removing one means rewriting every commit that carries the trailer and force-pushing, so prevention is the only cheap option. Human `Co-authored-by:` trailers are fine and must be preserved.
 
