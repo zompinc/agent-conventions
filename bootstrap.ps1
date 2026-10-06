@@ -91,6 +91,14 @@ if (Test-Path (Join-Path $RepoRoot '.githooks')) {
     Write-Host "Hooks enabled: core.hooksPath=.githooks"
 }
 
+# Wire global gitignore
+$desiredExcludes = (Join-Path $HOME '.gitignore').Replace('\', '/')
+$currentExcludes = (git config --global core.excludesfile 2>$null)
+if ($currentExcludes -ne $desiredExcludes -and $currentExcludes -ne (Join-Path $HOME '.gitignore')) {
+    git config --global core.excludesfile $desiredExcludes
+    Write-Host "Configured: core.excludesfile=$desiredExcludes"
+}
+
 # Daily update, for machines where a Claude session may not start for a while.
 # Set ZOMP_NO_SCHEDULE=1 to opt out.
 if ($env:ZOMP_NO_SCHEDULE -ne '1') {

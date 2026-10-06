@@ -73,6 +73,12 @@ if [ -d "$REPO_ROOT/.githooks" ]; then
   echo "Hooks enabled: core.hooksPath=.githooks"
 fi
 
+# Wire global gitignore
+if [ "$(git config --global core.excludesfile 2>/dev/null || true)" != "$HOME/.gitignore" ]; then
+  git config --global core.excludesfile "$HOME/.gitignore"
+  echo "Configured: core.excludesfile=$HOME/.gitignore"
+fi
+
 # Daily update, for machines where a Claude session may not start for a while.
 # Skipped where cron is unavailable; set ZOMP_NO_SCHEDULE=1 to opt out.
 if [ "${ZOMP_NO_SCHEDULE:-0}" != "1" ] && command -v crontab >/dev/null 2>&1; then
