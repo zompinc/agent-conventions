@@ -49,6 +49,7 @@ function Remove-StaleLinks([string]$Root, [switch]$TopLevelOnly) {
 }
 
 Remove-StaleLinks (Join-Path $HOME '.claude\skills')
+Remove-StaleLinks (Join-Path $HOME '.gemini\config')
 Remove-StaleLinks $HOME -TopLevelOnly
 
 $linked = 0
@@ -81,6 +82,40 @@ foreach ($file in Get-ChildItem $HomeSource -Recurse -File -Force) {
         Write-Host "Copied: $dest"
     }
     $linked++
+}
+
+# Antigravity discovers global rules at ~/.gemini/config/AGENTS.md.
+$geminiConfig = Join-Path $HOME '.gemini\config'
+if (-not (Test-Path $geminiConfig)) { New-Item -ItemType Directory -Path $geminiConfig -Force | Out-Null }
+$geminiAgents = Join-Path $geminiConfig 'AGENTS.md'
+$agentsTarget = Join-Path $HOME 'AGENTS.md'
+
+if (Test-Path $geminiAgents) {
+    $existing = Get-Item $geminiAgents -Force
+    if ($existing.LinkType -eq 'SymbolicLink' -and $existing.Target -eq $agentsTarget) {
+        $kept++
+    } else {
+        Remove-Item $geminiAgents -Force -Recurse
+        try {
+            New-Item -ItemType SymbolicLink -Path $geminiAgents -Target $agentsTarget | Out-Null
+            Write-Host "Linked: $geminiAgents"
+            $linked++
+        } catch {
+            Copy-Item $agentsTarget $geminiAgents -Force
+            Write-Host "Copied: $geminiAgents"
+            $linked++
+        }
+    }
+} else {
+    try {
+        New-Item -ItemType SymbolicLink -Path $geminiAgents -Target $agentsTarget | Out-Null
+        Write-Host "Linked: $geminiAgents"
+        $linked++
+    } catch {
+        Copy-Item $agentsTarget $geminiAgents -Force
+        Write-Host "Copied: $geminiAgents"
+        $linked++
+    }
 }
 
 Write-Host "Links: $linked new, $kept already correct."
