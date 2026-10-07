@@ -54,7 +54,7 @@ Force a check with `scripts/update-conventions.sh --now`. What it did is in `.gi
 
 - `home/` - mirrors your home directory; every file under it is symlinked to the matching path in `$HOME`, so new files need no change to the bootstrap scripts
 - `home/AGENTS.md` - always-resident conventions (git, docs and prose style, versioning principle, branding), symlinked to `~/AGENTS.md`
-- `home/.gitignore` - global gitignore (OS files, editor artifacts, agent scratch), configured via `git config --global core.excludesfile`
+- `home/.gitignore` - global gitignore (OS files, editor artifacts, agent scratch), set as `core.excludesfile` unless one is already in use
 - `home/.claude/skills/<name>/SKILL.md` - stack- or activity-specific conventions, loaded on demand
   - `zomp-dotnet` - .NET/C# stack defaults, architecture, packaging, build quality
   - `zomp-new-repo` - first-commit files, pnpm, the husky pre-commit hook (templates included), shared `.vscode` files

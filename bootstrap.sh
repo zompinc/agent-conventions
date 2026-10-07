@@ -73,10 +73,15 @@ if [ -d "$REPO_ROOT/.githooks" ]; then
   echo "Hooks enabled: core.hooksPath=.githooks"
 fi
 
-# Wire global gitignore
-if [ "$(git config --global core.excludesfile 2>/dev/null || true)" != "$HOME/.gitignore" ]; then
-  git config --global core.excludesfile "$HOME/.gitignore"
-  echo "Configured: core.excludesfile=$HOME/.gitignore"
+# Global gitignore. Git reads only one excludes file, so never replace one
+# already in use - its patterns would silently stop applying.
+current=$(git config --global core.excludesfile 2>/dev/null || true)
+xdg_ignore="${XDG_CONFIG_HOME:-$HOME/.config}/git/ignore"
+if [ -z "$current" ] && [ ! -f "$xdg_ignore" ]; then
+  git config --global core.excludesfile '~/.gitignore'
+  echo "Configured: core.excludesfile=~/.gitignore"
+elif [ "$current" != '~/.gitignore' ] && [ "$current" != "$HOME/.gitignore" ]; then
+  echo "Skipped core.excludesfile: already using ${current:-$xdg_ignore}. Merge ~/.gitignore into it by hand."
 fi
 
 # Daily update, for machines where a Claude session may not start for a while.

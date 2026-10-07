@@ -91,12 +91,16 @@ if (Test-Path (Join-Path $RepoRoot '.githooks')) {
     Write-Host "Hooks enabled: core.hooksPath=.githooks"
 }
 
-# Wire global gitignore
-$desiredExcludes = (Join-Path $HOME '.gitignore').Replace('\', '/')
-$currentExcludes = (git config --global core.excludesfile 2>$null)
-if ($currentExcludes -ne $desiredExcludes -and $currentExcludes -ne (Join-Path $HOME '.gitignore')) {
-    git config --global core.excludesfile $desiredExcludes
-    Write-Host "Configured: core.excludesfile=$desiredExcludes"
+# Global gitignore. Git reads only one excludes file, so never replace one
+# already in use - its patterns would silently stop applying.
+$current = git config --global core.excludesfile
+$xdgHome = if ($env:XDG_CONFIG_HOME) { $env:XDG_CONFIG_HOME } else { Join-Path $HOME '.config' }
+$xdgIgnore = Join-Path $xdgHome 'git\ignore'
+if (-not $current -and -not (Test-Path $xdgIgnore)) {
+    git config --global core.excludesfile '~/.gitignore'
+    Write-Host "Configured: core.excludesfile=~/.gitignore"
+} elseif ($current -ne '~/.gitignore' -and $current -ne (Join-Path $HOME '.gitignore')) {
+    Write-Host "Skipped core.excludesfile: already using $(if ($current) { $current } else { $xdgIgnore }). Merge ~/.gitignore into it by hand."
 }
 
 # Daily update, for machines where a Claude session may not start for a while.
