@@ -48,9 +48,9 @@ prune "$HOME" 1
 linked=0
 kept=0
 
-while IFS= read -r src; do
-  rel="${src#"$HOME_SOURCE"/}"
-  dest="$HOME/$rel"
+# Antigravity reads global rules from ~/.gemini/config, not ~ (last line below).
+while IFS='|' read -r src rel; do
+  dest="$HOME/${rel:-${src#"$HOME_SOURCE"/}}"
 
   if [ -L "$dest" ] && [ "$(readlink "$dest")" = "$src" ]; then
     kept=$((kept + 1))
@@ -63,17 +63,8 @@ while IFS= read -r src; do
   linked=$((linked + 1))
 done <<EOF
 $(find "$HOME_SOURCE" -type f)
+$HOME_SOURCE/AGENTS.md|.gemini/config/AGENTS.md
 EOF
-
-# Antigravity discovers global rules at ~/.gemini/config/AGENTS.md.
-mkdir -p "$HOME/.gemini/config"
-if [ ! -L "$HOME/.gemini/config/AGENTS.md" ] || [ "$(readlink "$HOME/.gemini/config/AGENTS.md")" != "$HOME/AGENTS.md" ]; then
-  ln -sfn "$HOME/AGENTS.md" "$HOME/.gemini/config/AGENTS.md"
-  echo "Linked: $HOME/.gemini/config/AGENTS.md"
-  linked=$((linked + 1))
-else
-  kept=$((kept + 1))
-fi
 
 echo "Links: $linked new, $kept already correct."
 
