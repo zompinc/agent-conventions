@@ -14,7 +14,7 @@ These extend `AGENTS.md`, which stays in force. A JetKVM gives you HDMI video in
   ```powershell
   $m=(Get-CimInstance Win32_ComputerSystem).Model; $b=(Get-CimInstance Win32_BIOS).SMBIOSBIOSVersion
   "$env:COMPUTERNAME / $m / BIOS $b"
-  if ($m -eq 'V3' -and $b -eq '1.05') { <destructive step> } else { 'WRONG MACHINE - aborted' }
+  if ($m -eq '<model>' -and $b -eq '<bios-version>') { <destructive step> } else { 'WRONG MACHINE - aborted' }
   ```
 
   Never pick a target by guessing which unknown IP on the JetKVM's LAN is the machine on screen. Other machines on that LAN may accept the same SSH key; one answering is not evidence it is the right one.
@@ -31,7 +31,7 @@ These extend `AGENTS.md`, which stays in force. A JetKVM gives you HDMI video in
   - Setting the textarea value from page JavaScript does not register with the app; type into it.
   - The paste does not press Enter at the end; send `Return` separately after checking the line on screen.
 - **Long scripts:** encode them instead of pasting multi-line text. `powershell -NoProfile -ExecutionPolicy Bypass -EncodedCommand <base64 of UTF-16LE script>` keeps quoting out of the keystroke path. Budget the paste time (5 KB is about 3 minutes).
-- **Fix a mistyped long command without retyping it.** If cursor keys do not arrive, re-run it from history with a correction, for example `iex (Get-History | Where-Object CommandLine -like 'asudo*' | Select-Object -Last 1).CommandLine.Substring(1)`.
+- **Fix a mistyped long command without retyping it.** If cursor keys do not arrive, re-run it from history with a correction. For example, when a leaked `a` turned `sudo ...` into `asudo ...`: `iex (Get-History | Where-Object CommandLine -like 'asudo*' | Select-Object -Last 1).CommandLine.Substring(1)`.
 - **Elevation:** Windows `sudo` (inline mode) elevates a single command from a normal shell without a UAC dialog to click. A new tab in an elevated Windows Terminal is not guaranteed to be elevated; check the tab title.
 
 ## Virtual Media
