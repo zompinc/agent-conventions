@@ -59,6 +59,7 @@ Force a check with `scripts/update-conventions.sh --now`. What it did is in `.gi
   - `zomp-dotnet` - .NET/C# stack defaults, architecture, packaging, build quality
   - `zomp-new-repo` - first-commit files, pnpm, the husky pre-commit hook (templates included), shared `.vscode` files
   - `zomp-ci` - GitHub Actions runners, local `act` runs, artifact retention, build version stamping
+  - `zomp-jetkvm` - driving a remote machine through a JetKVM: Paste text and key quirks, Virtual Media, SSH jump host, firmware screens
 - `home/.gemini/config/skills.json` - bridges `home/.claude/skills` into Google Antigravity (`agy`)
 - `AGENTS.md` - instructions for editing this repo, not shipped anywhere
 - `bootstrap.ps1` / `bootstrap.sh` - create the symlinks, enable this repo's hooks, and wire `core.excludesfile`
