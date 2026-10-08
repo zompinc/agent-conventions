@@ -49,18 +49,24 @@ function Remove-StaleLinks([string]$Root, [switch]$TopLevelOnly) {
 }
 
 Remove-StaleLinks (Join-Path $HOME '.claude\skills')
+Remove-StaleLinks (Join-Path $HOME '.gemini\config')
 Remove-StaleLinks $HOME -TopLevelOnly
 
 $linked = 0
 $kept = 0
 
-foreach ($file in Get-ChildItem $HomeSource -Recurse -File -Force) {
-    $rel = $file.FullName.Substring($HomeSource.Length).TrimStart('\', '/')
-    $dest = Join-Path $HOME $rel
+$links = @(foreach ($file in Get-ChildItem $HomeSource -Recurse -File -Force) {
+    @{ Source = $file.FullName; Rel = $file.FullName.Substring($HomeSource.Length).TrimStart('\', '/') }
+})
+# Antigravity reads global rules from ~\.gemini\config, not ~.
+$links += @{ Source = (Join-Path $HomeSource 'AGENTS.md'); Rel = '.gemini\config\AGENTS.md' }
+
+foreach ($link in $links) {
+    $dest = Join-Path $HOME $link.Rel
 
     if (Test-Path $dest) {
         $existing = Get-Item $dest -Force
-        if ($existing.LinkType -eq 'SymbolicLink' -and $existing.Target -eq $file.FullName) {
+        if ($existing.LinkType -eq 'SymbolicLink' -and $existing.Target -eq $link.Source) {
             $kept++
             continue
         }
@@ -71,13 +77,13 @@ foreach ($file in Get-ChildItem $HomeSource -Recurse -File -Force) {
     if (-not (Test-Path $parent)) { New-Item -ItemType Directory -Path $parent -Force | Out-Null }
 
     try {
-        New-Item -ItemType SymbolicLink -Path $dest -Target $file.FullName | Out-Null
+        New-Item -ItemType SymbolicLink -Path $dest -Target $link.Source | Out-Null
         Write-Host "Linked: $dest"
     } catch {
         Write-Warning "Symlink failed ($($_.Exception.Message))."
         Write-Warning "Falling back to copy. Re-run this script after 'git pull' to refresh."
         Write-Warning "To enable symlinks: Settings -> Privacy & Security -> For developers -> Developer Mode."
-        Copy-Item $file.FullName $dest -Force
+        Copy-Item $link.Source $dest -Force
         Write-Host "Copied: $dest"
     }
     $linked++

@@ -42,14 +42,15 @@ prune() {
 }
 
 prune "$HOME/.claude/skills"
+prune "$HOME/.gemini/config"
 prune "$HOME" 1
 
 linked=0
 kept=0
 
-while IFS= read -r src; do
-  rel="${src#"$HOME_SOURCE"/}"
-  dest="$HOME/$rel"
+# Antigravity reads global rules from ~/.gemini/config, not ~ (last line below).
+while IFS='|' read -r src rel; do
+  dest="$HOME/${rel:-${src#"$HOME_SOURCE"/}}"
 
   if [ -L "$dest" ] && [ "$(readlink "$dest")" = "$src" ]; then
     kept=$((kept + 1))
@@ -62,6 +63,7 @@ while IFS= read -r src; do
   linked=$((linked + 1))
 done <<EOF
 $(find "$HOME_SOURCE" -type f)
+$HOME_SOURCE/AGENTS.md|.gemini/config/AGENTS.md
 EOF
 
 echo "Links: $linked new, $kept already correct."

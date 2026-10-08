@@ -1,6 +1,6 @@
 # Zomp Agent Conventions
 
-Cross-project conventions for Zomp engineers - git workflow, documentation style, CI, versioning, branding. The shipped file is [`home/AGENTS.md`](home/AGENTS.md). It's named `AGENTS.md` because that's the cross-tool convention all major AI coding agents (Claude Code, Codex, Cursor, Aider) walk up the directory tree to find.
+Cross-project conventions for Zomp engineers - git workflow, documentation style, CI, versioning, branding. The shipped file is [`home/AGENTS.md`](home/AGENTS.md). It's named `AGENTS.md` because that's the cross-tool convention all major AI coding agents (Claude Code, Antigravity, Codex, Cursor, Aider) walk up the directory tree to find.
 
 These are one company's opinions, published because they may be useful to others setting up the same thing. Fork and adapt; nothing here needs to be agreed with.
 
@@ -59,6 +59,7 @@ Force a check with `scripts/update-conventions.sh --now`. What it did is in `.gi
   - `zomp-dotnet` - .NET/C# stack defaults, architecture, packaging, build quality
   - `zomp-new-repo` - first-commit files, pnpm, the husky pre-commit hook (templates included), shared `.vscode` files
   - `zomp-ci` - GitHub Actions runners, local `act` runs, artifact retention, build version stamping
+- `home/.gemini/config/skills.json` - bridges `home/.claude/skills` into Google Antigravity (`agy`)
 - `AGENTS.md` - instructions for editing this repo, not shipped anywhere
 - `bootstrap.ps1` / `bootstrap.sh` - create the symlinks, enable this repo's hooks, and wire `core.excludesfile`
 - `.githooks/` and `scripts/check-private-content.sh` - keep client names and machine paths out of a public repo
