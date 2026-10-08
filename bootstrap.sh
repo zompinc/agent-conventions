@@ -78,6 +78,11 @@ fi
 # Global gitignore. Git reads only one excludes file, so never replace one
 # already in use - its patterns would silently stop applying.
 current=$(git config --global core.excludesfile 2>/dev/null || true)
+# A setting naming a missing file applies no patterns, so it is safe to replace.
+if [ -n "$current" ] && [ ! -f "${current/#\~/$HOME}" ]; then
+  echo "Replacing core.excludesfile: $current does not exist."
+  current=
+fi
 xdg_ignore="${XDG_CONFIG_HOME:-$HOME/.config}/git/ignore"
 if [ -z "$current" ] && [ ! -f "$xdg_ignore" ]; then
   git config --global core.excludesfile '~/.gitignore'
