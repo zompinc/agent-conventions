@@ -34,6 +34,10 @@ A branch is rarely alone. Other branches may be built on it, directly or on an o
 
    `<old-parent-tip>` comes from the recorded tips. Never take it from the parent branch after the parent has been rebased.
 
+   Bottom-up works as well: rebase the deepest branch onto the new base, which replays its parents' commits too, then point each parent at its rewritten commit with `git branch -f <parent> <new-commit>` (or `git reset --hard <new-commit>` in the parent's worktree). Each parent commit is then replayed and resolved once. Match old tips to new commits by subject in the graph below, and confirm with `range-diff`.
+
+Look at the graph before and after: `git log --graph --oneline --decorate <upstream> <branch> <child> ...` (or `--all` in a small repo). The tree should have the same shape on the new base, with every branch label on the matching commit.
+
 `git rebase --update-refs` does all of this in one go for a linear stack, but **it skips every branch checked out in another worktree**, without an error. In a repo with one worktree per branch, that is all of them. Either rebase each branch in its own worktree with `--onto` as above, or confirm with `git worktree list` that nothing in the stack is checked out elsewhere before relying on `--update-refs`.
 
 A branch that exists only on a remote, or that someone else is working on, is not yours to rewrite. List it and tell the user; don't rebase it.
@@ -52,5 +56,5 @@ After resolving, build and run the tests before `git rebase --continue`, or add 
 ## Check before pushing
 
 - `git range-diff <old-tip>...<new-tip>` for each branch. Only the conflict resolutions should differ; anything else means a resolution changed more than it should.
-- `git log --graph --oneline <upstream>..<leaf>` shows the tree has the same shape as before.
+- The graph from above shows the same shape as before, with no branch left on the old commits.
 - Push every branch that moved, each with `--force-with-lease`, and say which ones moved.
