@@ -10,6 +10,7 @@ Conventions that only apply to one stack or one task live in skills, so they loa
 - **.NET / C#**: load the `zomp-dotnet` skill before making stack, architecture, packaging, testing, versioning, or build-configuration decisions in a C#/.NET repository.
 - **New repository**: load the `zomp-new-repo` skill before creating a repository or its first commit, or adding hooks, formatting, editor config or `.vscode` files to one (pnpm, the husky pre-commit hook, shared VS Code tasks, launch and extensions).
 - **CI and build versioning**: load the `zomp-ci` skill before creating or editing any file under `.github/workflows`, before adding an `actions/upload-artifact` step, and before wiring build-time version stamping into a project.
+- **Rebasing**: load the `zomp-rebase` skill before any rebase or cherry-pick that rewrites a branch, and before resolving a conflict in one. Branches built on the one being rebased move with it.
 
 ## Versioning
 
