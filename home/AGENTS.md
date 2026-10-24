@@ -10,6 +10,7 @@ Conventions that only apply to one stack or one task live in skills, so they loa
 - **.NET / C#**: load the `zomp-dotnet` skill before making stack, architecture, packaging, testing, versioning, or build-configuration decisions in a C#/.NET repository.
 - **New repository**: load the `zomp-new-repo` skill before creating a repository or its first commit, or adding hooks, formatting, editor config or `.vscode` files to one (pnpm, the husky pre-commit hook, shared VS Code tasks, launch and extensions).
 - **CI and build versioning**: load the `zomp-ci` skill before creating or editing any file under `.github/workflows`, before adding an `actions/upload-artifact` step, and before wiring build-time version stamping into a project.
+- **GitHub posting**: load the `zomp-github` skill before writing or posting any PR, issue, comment or review, and before merging a PR.
 
 ## Versioning
 
@@ -27,7 +28,6 @@ The mechanics live in skills: `zomp-ci` for git SHA capture in CI and the per-st
 - **Commit early, commit often.** Every coherent change that compiles and passes its tests should be its own commit on the topic branch - don't batch a half-day of work into one giant working-tree state waiting for a final "all done" commit. The branch is the work-in-progress space; rebase/squash before the PR if a tidy history matters. Specifically: **before any risky multi-file transformation** (mass renames, scripted rewrites across many files, anything driven by `sed`/`awk`/regex over the tree, dependency-graph refactors), commit the current state first. If the transformation goes sideways, `git restore` brings the tree back instantly - hours of uncommitted work clobbered by a wide `git checkout HEAD -- <glob>` are unrecoverable.
 - **Keep commit messages short.** The subject says what changed. Add a body only for the *why* a reviewer can't get from the diff, its comments, or the PR - usually one or two lines, often none. Don't restate the diff, narrate the debugging, or list edge cases the code already documents. A body that runs longer than the change it describes reads as machine-generated.
 - Never run `git checkout HEAD -- <broad-glob>` (e.g. `'*.cs'`, `.`) while uncommitted work exists in those paths - it permanently destroys the working-tree changes. If the goal is "revert a specific accidental edit," scope the path tightly and verify `git status` first. When in doubt, `git stash` is reversible; `git checkout HEAD --` is not.
-- **Squash-merge PRs** (`gh pr merge --squash`) unless the PR is a single commit or the user explicitly asks for a different merge strategy. Topic-branch fix-up commits ("address review", "fix typo") are noise on the default branch; one commit per PR keeps history linear and revertable. A single-commit PR can merge as-is since there is nothing to squash.
 - **History is linear - never create a merge commit.** To pick up another branch's work, or to bring a branch up to date, rebase: `git rebase <base>`, `git rebase --onto <newbase> <upstream>`, `git pull --rebase`. Never `git merge` one topic branch into another, and never resolve a stale branch with a merge. If a merge commit already exists, flatten it with `git rebase <base>` before pushing - rebase drops merges and replays the real commits in order.
 - **Worktrees go in a sibling folder named after the repo plus `.wt`**, one subfolder per branch, named after the branch with slashes replaced by dashes: a repo `myapp` on `feature/popup-polish` gets `../myapp.wt/feature-popup-polish`, via `git worktree add ../myapp.wt/feature-popup-polish -b feature/popup-polish <base>`. Don't put them directly beside the repo (`../myapp-popup-polish`), and prefer this over the harness's `.claude/worktrees/` inside the checkout. If the repo has its own worktree script, use that instead - it may wire up things a bare `git worktree add` does not, such as local secrets or agent memory. Why: each repo gets one `.wt` folder that sorts right next to its checkout, a directory full of repos stays readable, and the worktrees stay out of the main checkout's file watchers, searches and solution explorer.
 - Rewriting a topic branch that is already pushed is fine and expected. Push it back with `git push --force-with-lease`, never a bare `--force`: `--force-with-lease` refuses the push if someone else moved the branch meanwhile, which a bare force would silently discard. Never rewrite `master`.
@@ -74,18 +74,6 @@ Hard wrapping is still correct in these places, so do not sweep them:
 - **Repo markdown and plain-text files** - match whatever the file already does. A repo that hand-wraps its docs at 80 stays hand-wrapped; a repo that writes one line per paragraph stays that way. Check before adding to an existing file.
 
 The distinction is whether something else does the wrapping. A renderer wraps for you, so give it unbroken text; a terminal or a diff does not, so wrap it yourself.
-
-## PRs and issues
-
-Keep PR descriptions, PR and review comments, and issue bodies as short as possible: what changed or what is broken, one line of cause, one line of fix. Leave out thanks and sign-offs, restatements of the diff, background the reader can get from the linked code, and offers to change things.
-
-Why: every sentence is something the reader has to process, and padded text reads as machine-generated. Draft, then cut until removing anything more would lose a fact the reader needs. A code snippet plus two sentences usually beats prose; use a table only when it replaces more text than it adds.
-
-When a PR fully resolves an issue, link it with a closing keyword (`Fixes #123`) so the issue closes on merge; use whichever keyword the repo's merged PRs already use. For partial work write `Part of #123`, without a keyword. Words like "Addresses" or "Relates to" create no link, so the issue stays open after merge and has to be closed by hand. Keywords only take effect when the PR targets the default branch.
-
-Re-read the whole thread right before drafting a comment, and again right before posting it: issue comments, reviews and inline review comments, all of them rather than the last few (`gh api repos/<owner>/<repo>/issues/<n>/comments?per_page=100`, plus `pulls/<n>/reviews` and `pulls/<n>/comments` on a PR). A read from earlier in the session is stale. Posting past a reply you have not seen answers a question nobody is asking now and ignores the one they are.
-
-In a comment on one repo, refer to another repo's issue or PR as `owner/repo#123`. A bare `#123` always links to the current repo, so it silently points at the wrong thread.
 
 ## Paths and references
 
