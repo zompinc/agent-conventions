@@ -83,6 +83,10 @@ Why: every sentence is something the reader has to process, and padded text read
 
 When a PR fully resolves an issue, link it with a closing keyword (`Fixes #123`) so the issue closes on merge; use whichever keyword the repo's merged PRs already use. For partial work write `Part of #123`, without a keyword. Words like "Addresses" or "Relates to" create no link, so the issue stays open after merge and has to be closed by hand. Keywords only take effect when the PR targets the default branch.
 
+Re-read the whole thread right before drafting a comment, and again right before posting it: issue comments, reviews and inline review comments, all of them rather than the last few (`gh api repos/<owner>/<repo>/issues/<n>/comments?per_page=100`, plus `pulls/<n>/reviews` and `pulls/<n>/comments` on a PR). A read from earlier in the session is stale. Posting past a reply you have not seen answers a question nobody is asking now and ignores the one they are.
+
+In a comment on one repo, refer to another repo's issue or PR as `owner/repo#123`. A bare `#123` always links to the current repo, so it silently points at the wrong thread.
+
 ## Paths and references
 
 Never use absolute filesystem paths (`C:\...`, `Q:\...`, `/home/...`, `/c/Users/...`) in any artifact a collaborator, client, or future contributor might read - READMEs, slide decks, code comments, commit messages, AGENTS files, anything. They reveal the author's personal machine layout, don't work for anyone else, and look amateurish in client-facing material.
