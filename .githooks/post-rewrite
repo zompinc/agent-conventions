@@ -1,0 +1,6 @@
+#!/bin/sh
+# `git pull --rebase` with local commits fires post-rewrite instead of
+# post-merge. Amends also land here and need no relinking.
+
+[ "$1" = rebase ] || exit 0
+exec sh "$(dirname "$0")/post-merge"
