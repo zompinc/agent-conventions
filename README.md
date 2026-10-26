@@ -37,7 +37,7 @@ Both scripts are idempotent, so re-run them any time. They only ever create link
 cd ~/agent-conventions && git pull
 ```
 
-If you symlinked, the change is live immediately. If you copied (no Dev Mode on Windows), re-run the bootstrap to refresh the copy.
+Edits to linked files are live immediately, but a newly added file or skill needs a link of its own. The `post-merge` and `post-rewrite` hooks re-run the bootstrap after every pull on `master` to create it, which also refreshes a copied install (no Dev Mode on Windows).
 
 ### Automatic updates
 

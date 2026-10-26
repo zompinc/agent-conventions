@@ -1,0 +1,19 @@
+#!/bin/sh
+# Re-run the bootstrap after a pull, so a file or skill added upstream gets
+# linked into $HOME. A manual `git pull` otherwise leaves it unlinked, and the
+# updater never catches up because it then finds nothing to fast-forward.
+#
+# Only on master: the bootstrap links $HOME to whichever checkout runs it, so a
+# rebase in a topic-branch worktree must not repoint the links at that worktree.
+
+[ "$(git rev-parse --abbrev-ref HEAD)" = master ] || exit 0
+
+root=$(git rev-parse --show-toplevel)
+export ZOMP_NO_SCHEDULE=1
+
+case "$(uname -s)" in
+  MINGW* | MSYS* | CYGWIN*)
+    powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$(cygpath -w "$root/bootstrap.ps1")" ;;
+  *)
+    sh "$root/bootstrap.sh" ;;
+esac || echo "post-merge: bootstrap failed; re-run it by hand." >&2
