@@ -64,7 +64,7 @@ Force a check with `scripts/update-conventions.sh --now`. What it did is in `.gi
 - `home/.gemini/config/skills.json` - bridges `home/.claude/skills` into Google Antigravity (`agy`)
 - `AGENTS.md` - instructions for editing this repo, not shipped anywhere
 - `bootstrap.ps1` / `bootstrap.sh` - create the symlinks, enable this repo's hooks, and wire `core.excludesfile`
-- `.githooks/` and `scripts/check-private-content.sh` - keep client names and machine paths out of a public repo
+- `.githooks/` and `scripts/check-private-content.sh` - keep client names and machine paths out of a public repo, and relink after a pull
 
 Future additions worth seeding here:
 
@@ -73,9 +73,11 @@ Future additions worth seeding here:
 
 ## Editing conventions
 
-Edit the file, commit, push. Everyone picks up the change on their next `git pull`; symlinks mean there is nothing to re-run unless you added a new skill.
+Edit the file, commit, push. Everyone picks up the change on their next `git pull`, new skills included.
 
 This repo is public and gets edited while working inside private repos, so a pre-commit hook scans for client names, machine paths, IP addresses and session links before anything is committed. Client names go in `~/.config/zomp/private-words.txt`, which is never committed - see [`AGENTS.md`](AGENTS.md).
+
+The hooks are plain shell in `.githooks/`, not the husky setup `zomp-new-repo` prescribes. This repo sets up a fresh machine, so its hooks must work with nothing but git installed; husky only activates after `pnpm install`, and would make Node a prerequisite of the bootstrap and the updater.
 
 Which file: if violating the rule causes harm, it goes in `home/AGENTS.md`. Guardrails have to be in context *before* the mistake, and a skill only loads once the model already knows it needs it - which is never the case for the rule you are about to break. If the rule is something you look up while doing a task you know you are doing, it goes in that task's skill. Language-specific reference is the common case of the second, but it is the consequence of getting it wrong, not the language, that decides.
 
