@@ -15,5 +15,5 @@ case "$(uname -s)" in
   MINGW* | MSYS* | CYGWIN*)
     powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$(cygpath -w "$root/bootstrap.ps1")" ;;
   *)
-    sh "$root/bootstrap.sh" ;;
+    bash "$root/bootstrap.sh" ;;
 esac || echo "post-merge: bootstrap failed; re-run it by hand." >&2

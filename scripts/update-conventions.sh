@@ -71,7 +71,7 @@ if git merge --ff-only --quiet origin/master 2>/dev/null; then
   log "updated: fast-forwarded $behind commit(s)"
   # Relink, so a new file or skill added upstream exists on this machine.
   if [ -x "$repo_root/bootstrap.sh" ] || [ -f "$repo_root/bootstrap.sh" ]; then
-    ZOMP_NO_SCHEDULE=1 sh "$repo_root/bootstrap.sh" >> "$log_file" 2>&1 || log "bootstrap failed"
+    ZOMP_NO_SCHEDULE=1 bash "$repo_root/bootstrap.sh" >> "$log_file" 2>&1 || log "bootstrap failed"
   fi
 else
   log "skipped: cannot fast-forward"
