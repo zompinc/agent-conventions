@@ -100,6 +100,11 @@ if (Test-Path (Join-Path $RepoRoot '.githooks')) {
 # Global gitignore. Git reads only one excludes file, so never replace one
 # already in use - its patterns would silently stop applying.
 $current = git config --global core.excludesfile
+# A setting naming a missing file applies no patterns, so it is safe to replace.
+if ($current -and -not (Test-Path ($current -replace '^~', $HOME))) {
+    Write-Host "Replacing core.excludesfile: $current does not exist."
+    $current = $null
+}
 $xdgHome = if ($env:XDG_CONFIG_HOME) { $env:XDG_CONFIG_HOME } else { Join-Path $HOME '.config' }
 $xdgIgnore = Join-Path $xdgHome 'git\ignore'
 if (-not $current -and -not (Test-Path $xdgIgnore)) {
