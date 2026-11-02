@@ -64,7 +64,9 @@ When fixing existing files, only sweep dashes you authored or are otherwise edit
 
 ## Line breaks
 
-Never hard-wrap prose that is going into a web UI: GitHub issue and PR bodies, review and issue comments, Slack messages, web forms, anything with a textarea. Write each paragraph as one continuous line and separate paragraphs with a blank line. Let the renderer wrap it.
+Never hard-wrap prose that is going into a web UI: email bodies, GitHub issue and PR bodies, review and issue comments, Slack and Teams messages, web forms, anything with a textarea. Write each paragraph as one continuous line and separate paragraphs with a blank line. Let the renderer wrap it.
+
+This covers any text drafted for someone else to paste somewhere, and the destination decides, not the container it is handed over in. A draft email or chat message shown in a fenced code block is still bound for a compose window, so it stays unwrapped. The fence is there to make the text easy to copy; it is not a licence to wrap at 72 or 80 columns. The same reasoning rules out fixed-width alignment: ASCII tables and columns of figures padded with spaces line up only in a monospace font, so a draft bound for email or chat uses plain lines, never space-aligned columns.
 
 Hard-wrapping in those places is a reliable tell that text was machine-generated, because nobody typing into a browser inserts a newline every 76 columns. It also reflows badly: a fixed wrap that looks tidy at the author's width turns ragged in a narrow sidebar, on a phone, or inside a quoted reply, and it breaks grep and copy-paste of any sentence that straddles a break.
 
