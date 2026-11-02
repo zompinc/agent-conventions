@@ -10,16 +10,14 @@ These extend the global conventions in `AGENTS.md`, which stay in force. Where t
 ## Stack defaults
 
 - **Language**: C# on .NET, `LangVersion: preview`, `Nullable: enable`, `ImplicitUsings: enable`
-- **UI**: Avalonia (cross-platform desktop + Android); never WPF or WinForms
+- **UI**: Avalonia (cross-platform desktop + Android) by default; use WPF or WinForms only where the owner makes it a target
 - **MVVM**: CommunityToolkit.Mvvm (`[ObservableProperty]`, `[RelayCommand]`)
 - **Logging**: Serilog in the entry-point project; all other layers use `ILogger<T>` from `Microsoft.Extensions.Logging.Abstractions` only
-- **Testing**: TUnit + NSubstitute + FluentAssertions
+- **Testing**: TUnit with its own assertions, plus NSubstitute where a test needs a mock
 
 ### Testing packages
 
-Two traps that every new test project hits, because the stack defaults above mandate the packages that spring them.
-
-**Pin FluentAssertions to the 7.x line** (`7.2.2` or later 7.x). Version 8.0 moved to the Xceed commercial licence, which requires a paid per-developer licence for commercial use - and Zomp builds software for clients, so every use is commercial. 7.x remains Apache-2.0. A project that resolves "latest" lands on 8.x silently: there is no build warning, no restore error, nothing until someone reads the licence. Pin it explicitly in `Directory.Packages.props` with a comment saying why, so the next person does not "helpfully" bump it.
+A trap that every new test project hits, because the stack default above mandates the package that springs it.
 
 **TUnit needs the Microsoft.Testing.Platform opt-in in `global.json`** - not `dotnet.config`, which looks plausible and does nothing:
 
@@ -53,7 +51,7 @@ Rules of thumb:
 
 - **The target is zero file-level `using` directives**, not a threshold. An earlier version of this rule said "globalise anything referenced in more than ~3 files", which sounds reasonable and is worse in practice: it needs a per-namespace file count nobody will actually run, it leaves a residue that looks like an unfinished sweep, and it puts the convention permanently at odds with the analyser below. "No file-level usings" is checkable in one grep: `grep -rn "^using " --include=*.cs src tests tools`.
 - Per-project, not global-across-solution - Domain, Application, Infrastructure, and UI projects each have distinct natural sets.
-- Test projects also get global usings (`TUnit.Core`, `FluentAssertions`, the SUT's domain models).
+- Test projects also get global usings (`TUnit.Core`, the SUT's domain models).
 - Don't `Include` a namespace that's already in the SDK's default implicit-usings set. **Check rather than recall it**: the set is written to `artifacts/obj/<Project>/<config>_<tfm>/<Project>.GlobalUsings.g.cs`, and it is wider than most people remember - `System.Collections.Generic`, `System.IO`, `System.Threading` and `System.Threading.Tasks` are all in it. Namespaces that look like the strongest globalisation candidates are usually already covered, so the file-level lines are redundancy to delete rather than globals to add.
 - **Aliases can be global too.** `<Using Include="System.Threading.Tasks.Task" Alias="Task" />` emits `global using Task = System.Threading.Tasks.Task;`. Worth knowing where a name genuinely collides - `Microsoft.VisualStudio.Shell` defines its own `Task`, so a VSIX head would otherwise restate the alias at the top of every file that awaits anything.
 - **Adding the `<Using>` is only half the change.** Delete the now-redundant file-level `using` lines in the same commit. Declaring a global and leaving the per-file copies in place is the most common way this convention rots: the project looks compliant from the csproj, while every file still repeats what is already global. A project can sit like that for months because nothing fails - the duplicates are legal C# and the build stays clean.
