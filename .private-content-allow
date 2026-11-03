@@ -4,7 +4,5 @@
 
 Never use absolute filesystem paths
 Cross-repo relative paths
-Tilde-relative paths
-Heuristic: if a path contains a drive letter
 Never publish a Claude Code session URL
 trailers with an AI-account email
