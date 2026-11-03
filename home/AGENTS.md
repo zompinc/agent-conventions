@@ -1,6 +1,6 @@
 # Zomp - Global Agent Conventions
 
-Zomp (zomp.com) builds software for clients. These conventions apply to all Zomp projects unless a repo-level AGENTS.md overrides them.
+These conventions apply to all Zomp (zomp.com) projects, client and open source, unless a repo-level AGENTS.md overrides them.
 
 ## Skills
 
