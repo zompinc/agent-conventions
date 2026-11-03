@@ -139,6 +139,15 @@ Why: a single ignorable tree makes cleaning one `rm -rf artifacts`, keeps CI art
 - SA1623: XML doc summaries on properties must start with "Gets" or "Gets or sets".
 - CA1819: never return arrays from properties - use `IReadOnlyList<T>` or `IEnumerable<T>`.
 
+## Win32 interop
+
+Call Win32 through [CsWin32](https://github.com/microsoft/CsWin32), not hand-written `[DllImport]` or `[LibraryImport]`:
+
+1. Add `Microsoft.Windows.CsWin32` with `PrivateAssets="all"`. It is a source generator, so nothing ships with the app.
+1. List the APIs in `NativeMethods.txt` beside the project, one per line, and call them through `PInvoke`.
+
+The signatures, flags and structs come from Microsoft's metadata, so a wrong type or a forgotten constant is not something to get wrong by hand. Keep hand-written imports only for a library the metadata does not cover. In a project that also runs elsewhere, put the calls behind `OperatingSystem.IsWindows()`.
+
 ## Cross-platform CI
 
 - The SDK lowercases the `$(Configuration)` folder name in build output paths (`release` instead of `Release`) - see Build output above. This is invisible on Windows (case-insensitive FS) but breaks on Linux CI. When referencing build output paths across projects (e.g., in a Pack project), explicitly set `-p:OutputPath=...` with the correct casing rather than relying on `BaseOutputPath` + SDK-computed configuration subfolder.
