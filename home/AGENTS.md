@@ -16,6 +16,12 @@ Load the skill before the task it covers:
 
 Every deployable project derives its version from git, never hardcoded, and surfaces it in a fixed location: window title or About dialog for desktop, a `<meta>` tag plus `/build-info.json` for web, an image label plus a `/version` endpoint for services. Mechanics are in `zomp-ci` and `zomp-dotnet`.
 
+Breaking changes follow the version. A public API includes CLI flags, config and file formats, and wire protocols.
+
+- **Before 1.0**, change public APIs freely when it makes the design cleaner. Note the break in the PR text; don't ask about it.
+- **From 1.0**, a break needs a major version bump and the user's OK.
+- **A 0.x package a client already consumes** counts as stable: ask before breaking it, and ask if unsure whether anyone consumes it.
+
 ## Git
 
 - Default branch is **`master`** on Zomp repos; never assume `main`. For non-Zomp repos, check `git symbolic-ref refs/remotes/origin/HEAD`.
