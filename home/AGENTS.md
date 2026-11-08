@@ -37,6 +37,10 @@ Breaking changes follow the version. A public API includes CLI flags, config and
 - **Never write a bare `*.ext` rule in `.gitignore` if any directory in the repo ends in `.ext`.** It matches directories too, and with Windows `core.ignorecase=true`, `*.vsix` silently untracks all of `src/MyApp.Vsix/` while builds and `git status` still look fine. Scope or anchor the rule (`/artifacts/**/*.vsix`). Diagnose with `git check-ignore -v <path>`.
 - **On a repo's first commit, verify every project is tracked**: `git ls-files <dir>` must not be empty for any scaffolded directory. A clean `git status` proves nothing.
 
+## Long jobs
+
+A watcher must also fire on failure lines and a stalled log, not only an exit marker. Log by redirect, not `| tee`: leftover children (MSBuild nodes) can hold the pipe open forever.
+
 ## Markdown
 
 Use `1.` for **every** ordered-list item; renderers renumber, and diffs stay small. To start elsewhere, set only the first marker. In an existing `1./2./3.` file, match it if renumbering would be noise.
