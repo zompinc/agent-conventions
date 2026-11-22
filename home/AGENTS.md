@@ -11,6 +11,7 @@ Load the skill before the task it covers:
 - **CI and build versioning**: `zomp-ci` before creating or editing anything under `.github/workflows`, adding an `actions/upload-artifact` step, or wiring build-time version stamping.
 - **GitHub posting**: `zomp-github` before writing or posting any PR, issue, comment or review, and before merging a PR.
 - **Rebasing**: `zomp-rebase` before any rebase or cherry-pick that rewrites a branch, and before resolving a conflict in one. Branches built on the one being rebased move with it.
+- **Explainers**: `zomp-explainer` before writing or updating a reading guide for a PR, branch, feature or codebase, and when the user asks to understand or explain work done across sessions.
 
 ## Versioning
 
