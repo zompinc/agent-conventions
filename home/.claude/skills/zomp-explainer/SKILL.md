@@ -22,6 +22,8 @@ The owner of the repository or the branch: competent in the domain, directing th
 
 Put it in the repository it describes, under `docs-local/`, named after the topic (`docs-local/query-batching-pr-guide.md`). Keep it untracked and exclude the folder through `.git/info/exclude` (add a `/docs-local/` line), never through `.gitignore`: an ignore rule would be a change in the PR. State this in the header so a later session does not commit it by accident.
 
+When the subject lives in a repository you have no clone of, such as a discussion thread in someone else's project, put the guide under `docs-local/` of the local repository the work is for (the fork, the consuming project, the repo where the fix will land) and say in the header which repository and thread it describes. The header, not the folder, tells the reader what the guide is about.
+
 Add the path to the project memory so "where is the explainer again?" has an answer in a later session.
 
 The header carries everything a reader needs to judge staleness: repository, branch, PR and issue links, number of commits, the base commit it was last rebased onto, the date, and the size of the change (`git diff --stat <base>..HEAD` summary). A guide whose header says 8 commits on top of a base from three weeks ago tells the reader exactly how much to trust it.
@@ -43,6 +45,17 @@ Use this order. Each section exists for a reason; drop one only when it has noth
 
 For an unfamiliar codebase rather than own work, the same skeleton applies with two renamings: "reading order" is by entry point rather than commit, and "design decisions" becomes "conventions and why they exist".
 
+### Explaining a discussion thread
+
+When the subject is an issue, PR or discussion thread the owner has to follow or answer in, the skeleton maps like this:
+
+- "Reading order" is the thread by era: which comments to read, with a link and date for each, who wrote it and which position it takes. Skip nothing silently; say which comments are noise and why.
+- "Lifecycle" is the mechanism the thread argues about (a build pipeline, a protocol exchange, a release flow), traced end to end so the positions have something to attach to.
+- "Design decisions" becomes "positions and the constraint behind each", with the maintainer who holds each position named and quoted briefly. Keep the quote and your reading of it visibly separate: a quoted sentence is evidence, an interpretation is yours, and the owner will repeat the guide to those same maintainers.
+- "Open items" becomes whose turn it is: what the maintainers are waiting on, what the owner must decide or answer, and what nobody has addressed.
+
+Re-read the whole thread right before writing, every comment and not the last few (`gh api repos/<owner>/<repo>/issues/<n>/comments?per_page=100`, plus the timeline endpoint for cross-references). A read from earlier in the session is stale. Quote errors and logs exactly as they were pasted in the thread, linked to the comment, never paraphrased.
+
 ## Sizing
 
 Scale the guide to the change, not to the template. A 3000-line change across 25 files earns 250 to 300 lines of guide. A 200-line fix earns 30 to 60 lines: the one-paragraph version, the lifecycle, the decisions and the open items, with the rest folded into them. A guide longer than the diff it explains has stopped being a guide.
@@ -54,6 +67,8 @@ Give the reader both depths through order rather than by asking which they want:
 Write every statement from the code as it is now, not from memory of writing it. Re-read a file before describing it, even one written an hour ago; the review fix or the rebase may have changed it. A guide that describes the first attempt as if it were the final design is worse than no guide, because the reader will repeat it to a reviewer.
 
 Anchor claims with the file name and member name (`RelationalCommandCache.GetRelationalCommandTemplate`), not with line numbers. Line numbers rot at the first rebase and the reader has no way to tell. When a line reference genuinely helps, give it in addition to the name, and re-check all of them when updating the guide.
+
+Use status words no stronger than the evidence. Work that was tried once is "tried", not "validated in production"; a build that completed is "built", not "shipped"; a maintainer who asked a question "asked", they did not "object". The owner corrects an overstatement once and then trusts the guide less everywhere.
 
 Captured output (SQL, logs, command output, error messages) comes from a real run, never from what the code "should" produce, and the guide says when and against what it was captured. The same rule applies to any snippet the reader might paste into a PR or issue.
 
