@@ -1,6 +1,6 @@
 ---
 name: zomp-new-repo
-description: Zomp setup for a new repository or project - first-commit files (.gitattributes, .editorconfig, .gitignore, README), pnpm, the husky pre-commit hook with Prettier and a final-newline check, and shared VS Code tasks, launch and extension recommendations. Load this before creating a repository or its first commit, and before adding hooks, formatting, editor config or .vscode files to an existing repo.
+description: Zomp setup for a new repository or project - first-commit files (.gitattributes, .editorconfig, .gitignore, README), pnpm, the husky pre-commit hook with Prettier and a final-newline check, shared VS Code tasks, launch and extension recommendations, and pre-approving workspace trust before starting Claude Code in it. Load this before creating a repository or its first commit, and before adding hooks, formatting, editor config or .vscode files to an existing repo.
 ---
 
 # New repository setup
@@ -76,6 +76,25 @@ Only settings every contributor needs for the repo to work, such as a toolchain 
 No personal hosts, usernames, addresses or absolute paths in any of them. A task that needs a machine or router takes it from the environment (`"env": { "ROUTER": "${env:ROUTER}" }`), and the script fails clearly when it is unset rather than quietly doing less.
 
 Use `${workspaceFolder}` for paths.
+
+## Starting Claude Code in it
+
+Claude Code asks "Do you trust the files in this folder?" on the first start in every git repository: trust is kept per repository root, and a trusted parent folder never covers a repository inside it. Nothing turns the prompt off, so when you start a session in a repository you created, pre-approve its root first, the way the docs describe (`projects["<root>"].hasTrustDialogAccepted` in `~/.claude.json`). Do it right before starting the session: running sessions rewrite that file, so read, change and replace it in one step, with Node so every other key comes back byte for byte:
+
+```sh
+node -e '
+const fs = require("fs"), os = require("os"), path = require("path");
+const file = path.join(os.homedir(), ".claude.json");
+const root = process.argv[1];
+const json = JSON.parse(fs.readFileSync(file, "utf8"));
+json.projects ??= {};
+json.projects[root] = { ...json.projects[root], hasTrustDialogAccepted: true };
+fs.writeFileSync(file + ".tmp", JSON.stringify(json, null, 2));
+fs.renameSync(file + ".tmp", file);
+' "Q:/Code/firmware/new-repo"
+```
+
+The key is the repository root as Claude Code writes it: forward slashes, and on Windows an upper-case drive letter (`Q:/Code/...`). Only do this for repositories you created in this session; anything cloned or downloaded gets the prompt. Never use `--dangerously-skip-permissions` to get past it: it switches off every other permission check too.
 
 ## Existing repos
 
