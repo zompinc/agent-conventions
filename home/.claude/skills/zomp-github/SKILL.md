@@ -1,6 +1,6 @@
 ---
 name: zomp-github
-description: Zomp conventions for writing on GitHub - PR descriptions, issue bodies, PR, issue and review comments, and merging PRs. Covers length, closing keywords, re-reading the thread and testing claims before posting, cross-repo references and squash-merge. Load this before writing or posting any GitHub PR, issue, comment or review, and before merging a PR.
+description: Zomp conventions for writing on GitHub - PR descriptions, issue bodies, PR, issue and review comments, and merging PRs. Covers length, closing keywords, re-reading the thread and testing claims before posting, reproducing on the latest version and searching existing issues and PRs before reporting upstream, cross-repo references and squash-merge. Load this before writing or posting any GitHub PR, issue, comment or review, and before merging a PR.
 ---
 
 # Zomp GitHub conventions
@@ -12,6 +12,15 @@ These extend the global conventions in `AGENTS.md`, which stay in force: no hard
 Re-read the whole thread right before drafting a comment, and again right before posting it: issue comments, reviews and inline review comments, all of them rather than the last few (`gh api repos/<owner>/<repo>/issues/<n>/comments?per_page=100`, plus `pulls/<n>/reviews` and `pulls/<n>/comments` on a PR). A read from earlier in the session is stale. Posting past a reply you have not seen answers a question nobody is asking now and ignores the one they are.
 
 If a comment claims something works or would work, and an experiment within reach can check it (a build, a test run, a repro), run it first and post the result. If it is too expensive, say the claim is untested. A prediction posted as fact gets tested by the reviewer instead, and costs credibility when it fails.
+
+## Reporting upstream
+
+Before filing a bug, a feature request or a PR against someone else's project, do both of these yourself, without asking the user first:
+
+1. **Reproduce it on the latest release**, and on the default branch too when building it is practical. Maintainers waste time on reports against versions where the problem may already be fixed. If upgrading would disturb the user's setup, install the newer version alongside (a separate toolchain or virtualenv, a scratch directory) rather than skipping the check. State the exact versions tested in the report.
+1. **Search existing issues and PRs, open and closed**, in that repo and in the closely related ones (the library a tool wraps, the fork it builds on), with several phrasings: the error text, the function or option name, the symptom. Comment on or link a match instead of opening a duplicate, and mention near misses that turned out unrelated only if a reader would otherwise wonder.
+
+Only ask the user when one of these is impossible (no access to the latest version, a download or install they must approve), and say which.
 
 ## Length
 
