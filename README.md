@@ -63,6 +63,8 @@ Force a check with `scripts/update-conventions.sh --now`. What it did is in `.gi
   - `zomp-jetkvm` - driving a remote machine through a JetKVM: Paste text and key quirks, Virtual Media, SSH jump host, firmware screens
   - `zomp-lan` - LAN address plan (reserved ranges by device type, DHCP pool), adding or moving a reservation on OpenWrt, randomized-MAC catches
   - `zomp-rebase` - moving every branch stacked on a rebased one (including across worktrees), resolving conflicts from both sides' intent, checking with `range-diff` before force-pushing
+  - `zomp-android-adb` - driving an Android phone over adb for device tests: tapping through Settings, Bluetooth pairing without root, keeping the screen usable
+  - `zomp-esp32-bench` - ESP32 bench work: side-by-side Xtensa toolchains, ESP-IDF in its container, flaky auto-reset, UART logging and why it breaks radio links, Bluetooth Classic through esp-radio
 - `home/.gemini/config/skills.json` - bridges `home/.claude/skills` into Google Antigravity (`agy`)
 - `AGENTS.md` - instructions for editing this repo, not shipped anywhere
 - `bootstrap.ps1` / `bootstrap.sh` - create the symlinks, enable this repo's hooks, and wire `core.excludesfile`

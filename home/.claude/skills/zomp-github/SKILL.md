@@ -1,6 +1,6 @@
 ---
 name: zomp-github
-description: Zomp conventions for writing on GitHub - PR descriptions, issue bodies, PR, issue and review comments, and merging PRs. Covers length, closing keywords, re-reading the thread and testing claims before posting, reproducing on the latest version and searching existing issues and PRs before reporting upstream, cross-repo references and squash-merge. Load this before writing or posting any GitHub PR, issue, comment or review, and before merging a PR.
+description: Zomp conventions for writing on GitHub - PR descriptions, issue bodies, PR, issue and review comments, and merging PRs. Covers length, closing keywords, re-reading the thread and testing claims before posting, reproducing on the latest version, searching existing issues and PRs, and cutting a patch to what the fix needs before reporting upstream, cross-repo references and squash-merge. Load this before writing or posting any GitHub PR, issue, comment or review, and before merging a PR.
 ---
 
 # Zomp GitHub conventions
@@ -15,12 +15,14 @@ If a comment claims something works or would work, and an experiment within reac
 
 ## Reporting upstream
 
-Before filing a bug, a feature request or a PR against someone else's project, do both of these yourself, without asking the user first:
+Before filing a bug, a feature request or a PR against someone else's project, do these yourself, without asking the user first:
 
 1. **Reproduce it on the latest release**, and on the default branch too when building it is practical. Maintainers waste time on reports against versions where the problem may already be fixed. If upgrading would disturb the user's setup, install the newer version alongside (a separate toolchain or virtualenv, a scratch directory) rather than skipping the check. State the exact versions tested in the report.
 1. **Search existing issues and PRs, open and closed**, in that repo and in the closely related ones (the library a tool wraps, the fork it builds on), with several phrasings: the error text, the function or option name, the symptom. Comment on or link a match instead of opening a duplicate, and mention near misses that turned out unrelated only if a reader would otherwise wonder.
+1. **Before proposing a patch, cut it to what the fix needs.** Run unmodified upstream with only the trigger removed, then drop each part of the patch in turn and retest. A change that works can carry parts that do nothing, and the real cause can lie outside the patch: a "missing feature" can turn out to be a latency problem in the caller.
+1. **Read the project's own contributor and agent rules** (`AGENTS.md`, `CONTRIBUTING.md`, the PR template) before writing anything. Some forbid agents from opening issues, or require a line disclosing AI help; where a project requires disclosure, its rule overrides the no-attribution rule above.
 
-Only ask the user when one of these is impossible (no access to the latest version, a download or install they must approve), and say which.
+Only ask the user when one of the first two is impossible (no access to the latest version, a download or install they must approve), and say which.
 
 ## Length
 
