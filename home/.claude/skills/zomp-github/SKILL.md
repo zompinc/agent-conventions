@@ -1,6 +1,6 @@
 ---
 name: zomp-github
-description: Zomp conventions for writing on GitHub - PR descriptions, issue bodies, PR, issue and review comments, and merging PRs. Covers length, closing keywords, re-reading the thread and testing claims before posting, reproducing on the latest version, searching existing issues and PRs, and cutting a patch to what the fix needs before reporting upstream, cross-repo references and squash-merge. Load this before writing or posting any GitHub PR, issue, comment or review, and before merging a PR.
+description: Zomp conventions for writing on GitHub - PR descriptions, issue bodies, PR, issue and review comments, and merging PRs. Covers length, closing keywords, re-reading the thread and testing claims before posting, reproducing on the latest version, searching existing issues and PRs, and cutting a patch to what the fix needs and closing cheap testing gaps before reporting upstream, cross-repo references and squash-merge. Load this before writing or posting any GitHub PR, issue, comment or review, and before merging a PR.
 ---
 
 # Zomp GitHub conventions
@@ -22,7 +22,9 @@ Before filing a bug, a feature request or a PR against someone else's project, d
 1. **Before proposing a patch, cut it to what the fix needs.** Run unmodified upstream with only the trigger removed, then drop each part of the patch in turn and retest. A change that works can carry parts that do nothing, and the real cause can lie outside the patch: a "missing feature" can turn out to be a latency problem in the caller.
 1. **Read the project's own contributor and agent rules** (`AGENTS.md`, `CONTRIBUTING.md`, the PR template) before writing anything. Some forbid agents from opening issues, or require a line disclosing AI help; where a project requires disclosure, its rule overrides the no-attribution rule above.
 
-Only ask the user when one of the first two is impossible (no access to the latest version, a download or install they must approve), and say which.
+1. **Close every testing gap you cheaply can before offering to open the PR.** A gap is anything you would otherwise list as unverified, such as a test that was built but not run. If minutes of your own work with the hardware and tools at hand can close it, do that first. For example, when the project's test runner needs equipment you lack, reproduce the test's steps in a plain program and check them over a serial console. Don't offer to open the PR while a gap that cheap is still open.
+
+Only ask the user when one of the first two is impossible (no access to the latest version, a download or install they must approve), and say which. The same applies to a gap that only a purchase, new hardware or the user's own time can close. Raise it with the user on its own, saying what it needs (the part, the cost, the setup), so they can decide. Don't leave it as a caveat in the PR text.
 
 ## Length
 
