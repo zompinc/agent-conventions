@@ -72,6 +72,10 @@ Never add `Co-Authored-By:` trailers with an AI-account email (e.g. `noreply@ant
 
 If a session link has already been published, say so and offer to remove it. Stripping it from a pushed commit means a force-push, so that is a bigger decision than editing a PR body.
 
+## Tangents
+
+When the user starts a new project mid-session (a new repo, library or research thread separate from the current task), hand it to a new agent session instead of doing it in this one. Open a terminal tab in the project's directory, created as a sibling of the related repos if needed, and start the agent there with a brief. On Windows Terminal: `wt -w 0 nt -d <dir> claude "<prompt>"`; `wt` splits its command line on `;`, so write the brief to a file and pass a prompt that points to it. The brief must stand alone: the goal, what is already known (with links), open questions, and which skills to load first. Note the hand-off in memory. Quick asides that take a few tool calls and no new repo stay in the current session.
+
 ## Android application IDs
 
 Use the reverse of the **client's** actual domain: `example.com` -> `com.example.appname`.

@@ -58,7 +58,9 @@ $kept = 0
 $links = @(foreach ($file in Get-ChildItem $HomeSource -Recurse -File -Force) {
     @{ Source = $file.FullName; Rel = $file.FullName.Substring($HomeSource.Length).TrimStart('\', '/') }
 })
-# Antigravity reads global rules from ~\.gemini\config, not ~.
+# Claude Code reads global rules from ~\.claude\CLAUDE.md, and Antigravity from
+# ~\.gemini\config; neither reads ~\AGENTS.md.
+$links += @{ Source = (Join-Path $HomeSource 'AGENTS.md'); Rel = '.claude\CLAUDE.md' }
 $links += @{ Source = (Join-Path $HomeSource 'AGENTS.md'); Rel = '.gemini\config\AGENTS.md' }
 
 foreach ($link in $links) {
@@ -70,7 +72,16 @@ foreach ($link in $links) {
             $kept++
             continue
         }
-        Remove-Item $dest -Force -Recurse
+        # A file of your own there (a personal ~\.claude\CLAUDE.md) is kept
+        # once as .bak; a copy made by an earlier fallback run is not.
+        $backup = "$dest.bak"
+        if (-not $existing.LinkType -and -not $existing.PSIsContainer -and -not (Test-Path $backup) -and
+            (Get-FileHash $dest).Hash -ne (Get-FileHash $link.Source).Hash) {
+            Move-Item $dest $backup
+            Write-Warning "Moved your $dest to $backup; merge what you need into the repo."
+        } else {
+            Remove-Item $dest -Force -Recurse
+        }
     }
 
     $parent = Split-Path -Parent $dest
