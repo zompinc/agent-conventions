@@ -54,7 +54,7 @@ Set `retention-days: 5` on every `actions/upload-artifact@v4` step. The default 
 
 The principle - every deployable project derives its version from git, never hardcoded, and surfaces it where a deployed environment can be asked - lives in `AGENTS.md`. This section is how to implement it.
 
-For .NET projects the mechanics are Nerdbank.GitVersioning; see the `zomp-dotnet` skill.
+For .NET projects the mechanics are Nerdbank.GitVersioning; see the `zomp-dotnet` skill. Rust binaries and firmware use the same `version.json` through the `nerdbank-gitversioning` crate; see the `zomp-rust` skill.
 
 ### Web/JS projects (Astro, Next, Vite, etc.)
 

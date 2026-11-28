@@ -7,6 +7,7 @@ These conventions apply to all Zomp (zomp.com) projects unless a repo-level AGEN
 Load the skill before the task it covers:
 
 - **.NET / C#**: `zomp-dotnet` before stack, architecture, packaging, testing, versioning, or build-configuration decisions in a C#/.NET repository.
+- **Rust**: `zomp-rust` before creating a Rust crate or workspace, and before toolchain, lint, versioning, dependency, licensing or CI decisions in a Rust repository.
 - **New repository**: `zomp-new-repo` before creating a repository or its first commit, or adding hooks, formatting, editor config or `.vscode` files to one.
 - **CI and build versioning**: `zomp-ci` before creating or editing anything under `.github/workflows`, adding an `actions/upload-artifact` step, or wiring build-time version stamping.
 - **GitHub posting**: `zomp-github` before writing or posting any PR, issue, comment or review, and before merging a PR.
