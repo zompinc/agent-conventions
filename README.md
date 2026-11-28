@@ -57,6 +57,7 @@ Force a check with `scripts/update-conventions.sh --now`. What it did is in `.gi
 - `home/.gitignore` - global gitignore (OS files, editor artifacts, agent scratch), set as `core.excludesfile` unless one is already in use
 - `home/.claude/skills/<name>/SKILL.md` - stack- or activity-specific conventions, loaded on demand
   - `zomp-dotnet` - .NET/C# stack defaults, architecture, packaging, build quality
+  - `zomp-rust` - Rust toolchain pinning, lints, versioning from git, library licensing and features, dependencies, tests
   - `zomp-new-repo` - first-commit files, pnpm, the husky pre-commit hook (templates included), shared `.vscode` files
   - `zomp-ci` - GitHub Actions runners, local `act` runs, artifact retention, build version stamping
   - `zomp-github` - PR, issue and comment writing: length, re-reading the thread, links, squash-merge
