@@ -48,7 +48,8 @@ prune "$HOME" 1
 linked=0
 kept=0
 
-# Antigravity reads global rules from ~/.gemini/config, not ~ (last line below).
+# Claude Code reads global rules from ~/.claude/CLAUDE.md, and Antigravity from
+# ~/.gemini/config; neither reads ~/AGENTS.md (last lines below).
 while IFS='|' read -r src rel; do
   dest="$HOME/${rel:-${src#"$HOME_SOURCE"/}}"
 
@@ -57,12 +58,20 @@ while IFS='|' read -r src rel; do
     continue
   fi
 
+  # A file of your own there (a personal ~/.claude/CLAUDE.md) is kept once
+  # as .bak.
+  if [ -f "$dest" ] && [ ! -L "$dest" ] && [ ! -e "$dest.bak" ] && ! cmp -s "$dest" "$src"; then
+    mv "$dest" "$dest.bak"
+    echo "Moved your $dest to $dest.bak; merge what you need into the repo." >&2
+  fi
+
   mkdir -p "$(dirname "$dest")"
   ln -sfn "$src" "$dest"
   echo "Linked: $dest"
   linked=$((linked + 1))
 done <<EOF
 $(find "$HOME_SOURCE" -type f)
+$HOME_SOURCE/AGENTS.md|.claude/CLAUDE.md
 $HOME_SOURCE/AGENTS.md|.gemini/config/AGENTS.md
 EOF
 

@@ -31,8 +31,10 @@ Deliberate counter-examples - the rules that quote a bad path on purpose - go in
 matching path in `$HOME`, so adding a file there needs no change to the
 bootstrap scripts.
 
-- `home/AGENTS.md` -> `~/AGENTS.md`. Loaded in every session of every project,
-  so every byte is charged to work that may not need it.
+- `home/AGENTS.md` -> `~/AGENTS.md`, plus `~/.claude/CLAUDE.md` and
+  `~/.gemini/config/AGENTS.md`, where Claude Code and Antigravity look. Loaded
+  in every session of every project, so every byte is charged to work that may
+  not need it.
 - `home/.claude/skills/<name>/SKILL.md` -> `~/.claude/skills/<name>/SKILL.md`.
   Loaded on demand, so only the name and description cost context until
   something makes the skill relevant.
